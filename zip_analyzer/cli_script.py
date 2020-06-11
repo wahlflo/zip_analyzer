@@ -2,7 +2,7 @@ import argparse
 import os
 import zipfile
 import sys
-from importlib_resources import files
+import importlib.resources as package_resources
 from cli_formatter.output_formatting import warning, error, info
 import zip_analyzer
 
@@ -52,6 +52,19 @@ def __archive_is_encrypted(zip_archive: zipfile.ZipFile):
         return True
 
 
+def __read_password_list(path_to_custom_password_list: str or None) -> list:
+    password_list = list()
+    if path_to_custom_password_list is not None:
+        path_to_password_list = os.path.abspath(path_to_custom_password_list)
+        with open(path_to_password_list, mode='r', encoding='utf-8') as password_list_file:
+            for line in password_list_file:
+                password_list.append(line.strip())
+    else:
+        for x in package_resources.read_text(zip_analyzer, 'password_list.txt').split('\n'):
+            password_list.append(x.strip())
+    return password_list
+
+
 def main():
     flags_to_parse, path_to_file = __parse_cli_arguments()
 
@@ -65,17 +78,9 @@ def main():
         argument_parser.print_help()
         exit()
 
-    path_to_archive = os.path.abspath(parsed_arguments.input)
+    path_to_archive = os.path.abspath(path_to_file)
 
-    # read password list
-    if parsed_arguments.passlist is not None:
-        path_to_password_list = os.path.abspath(parsed_arguments.passlist)
-    else:
-        path_to_password_list = files(zip_analyzer).joinpath('password_list.txt').read_text()
-    password_list = list()
-    with open(path_to_password_list, mode='r', encoding='utf-8') as password_list_file:
-        for line in password_list_file:
-            password_list.append(line.strip())
+
 
     try:
         zip_archive = zipfile.ZipFile(path_to_archive)
@@ -84,6 +89,7 @@ def main():
         exit()
     else:
         if parsed_arguments.crack:
+            password_list = __read_password_list(path_to_custom_password_list=parsed_arguments.passlist)
             crack_zip_archive(password_list=password_list, zip_archive=zip_archive)
         else:
             analyse_zip_archive(zip_archive=zip_archive)

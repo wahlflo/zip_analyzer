@@ -27,5 +27,8 @@ setuptools.setup(
         "console_scripts": [
             "zipAnalyzer=zip_analyzer.cli_script:main"
         ],
+    },
+    package_data={
+        'zip_analyzer': ['*.txt']
     }
 )
