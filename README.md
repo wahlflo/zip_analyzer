@@ -13,7 +13,7 @@ Type ```zipAnalyzer --help``` to view the help.
 ```
 usage: zipAnalyzer FILE [OPTIONS]
 
-A cli script to analyze zip archive.
+A cli script to analyze zip archives.
 
 optional arguments:
   -h, --help           show this help message and exit
