@@ -1,5 +1,5 @@
 # zipAnalyzer
-A cli script to analyze zip archive.
+A cli script to analyze zip archives.
 
 ## Installation
 
